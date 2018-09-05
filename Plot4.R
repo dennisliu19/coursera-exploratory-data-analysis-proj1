@@ -1,0 +1,27 @@
+#Load Data From the File
+dataFile <- "household_power_consumption.txt"
+fulldata <- read.table(dataFile, header=TRUE, sep=";", stringsAsFactors=FALSE, dec=".")
+#Filter and Convert Data
+data <- fulldata[fulldata$Date %in% c("1/2/2007","2/2/2007") ,]
+data$Date <- as.Date(data$Date,format = "%d/%m/%Y")
+data$Global_active_power <- as.numeric(data$Global_active_power)
+data$datetime <- paste(data$Date, data$Time,sep = " ")
+data$datetime<- strptime(data$datetime,"%Y-%m-%d %H:%M:%S")
+data$datetime <- as.POSIXct(data$datetime)
+
+#Plot 4
+
+par(mfrow = c(2, 2))
+plot(data$Global_active_power ~ data$datetime,type="l",ylab = "Global Active Power",xlab = " ")
+plot(data$Voltage ~ data$datetime, type = "l", ylab="Voltage",xlab = "datetime")
+plot(data$Sub_metering_1 ~ data$datetime, type = "l", 
+     ylab = "Energy sub metering", xlab = "")
+lines(data$Sub_metering_2 ~ data$datetime, type = "l", col="red")
+lines(data$Sub_metering_3 ~ data$datetime, type = "l", col="blue")
+
+legend("topright", col=c("black","red","blue"),lty=1,bty="n",
+       legend=c("Sub_metering_1","Sub_metering_2","Sub_metering_3"))
+plot(data$Global_reactive_power ~ data$datetime, type="l",ylab = "Global_reactive_power",xlab="datetime")
+
+dev.copy(png, file = "plot4.png", height = 480, width = 480)
+dev.off()
